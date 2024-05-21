@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Converter</title>
+</head>
+<body>
+    <h1>Currency Converter</h1>
+    <label for="amount">Amount:</label>
+    <input type="number" id="amount" placeholder="Enter amount">
+
+    <label for="fromCurrency">From Currency:</label>
+    <input type="text" id="fromCurrency" placeholder="Enter from currency code (e.g., USD)">
+
+    <label for="toCurrency">To Currency:</label>
+    <input type="text" id="toCurrency" placeholder="Enter to currency code (e.g., EUR)">
+
+    <button onclick="convert()">Convert</button>
+
+    <p id="result"></p>
+
+    <script>
+        function convert() {
+            var fromCurrency = document.getElementById("fromCurrency").value;
+            var toCurrency = document.getElementById("toCurrency").value;
+
+            var apiKey = '04603442bad95300f98cb70c';
+            var apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/${fromCurrency}`;
+
+            fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                var exchangeRate = data.conversion_rates[toCurrency];
+                if (!exchangeRate) {
+                    throw new Error('Invalid currency');
+                }
+                var amount = parseFloat(document.getElementById("amount").value);
+                var convertedAmount = amount * exchangeRate;
+                document.getElementById("result").innerHTML = `${amount} ${fromCurrency} = ${convertedAmount.toFixed(2)} ${toCurrency}`;
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+                document.getElementById("result").innerHTML = "Failed to convert. Please check your input.";
+            });
+        }
+    </script>
+</body>
+</html>
